@@ -4,12 +4,17 @@ req = requests.get('https://www.sport1tv.ru/figurnoe-katanie')
 
 text_page = req.text
 
-
 soup = BeautifulSoup(text_page,'lxml')
-print(soup)
+
+count=0
+
+print(soup.div['class'])
 
 
-print('Заголовки страницы')
-print(soup.header)
+# for i in soup.find_all("div",{"class":"title"}):
+#     print(i)
+
+
+
 
 
