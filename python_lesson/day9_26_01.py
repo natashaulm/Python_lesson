@@ -13,11 +13,15 @@ class Exctractor(QWidget):
         self.setWindowTitle("Парсинг страниц")
         self.setGeometry(100,100,400,400)
         
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
         
         self.url_input = QLineEdit(self)
         self.url_input.setPlaceholderText("ВВедите URL")
         layout.addWidget(self.url_input)
+
+        self.increment_button = QPushButton('+', self)
+        self.increment_button.clicked.connect(self.increment)
+        layout.addWidget(self.increment_button)
         
         self.exctract_button = QPushButton("Извлечение заголовков",self)
         self.exctract_button.clicked.connect(self.extract_headers)
@@ -33,6 +37,7 @@ class Exctractor(QWidget):
         self.headers = []
         
         self.setLayout(layout)
+        self.count_input_layer = 0
         
     def extract_headers(self):
         url = self.url_input.text()
@@ -47,8 +52,7 @@ class Exctractor(QWidget):
                 for level in range(1,7):
                     headers = soup.find_all(f"h{level}")
                     for header in headers:
-                        self.headers.append(header.get_text(strip=True))
-
+                        self.headers.append(f"h{level}: {header.get_text(strip=True)}") 
                 if self.headers:
                     self.result_label.setText('\n'.join(self.headers))
                 else:
@@ -64,8 +68,11 @@ class Exctractor(QWidget):
             
             if file_name:
                 try:
+                    file_name_split=file_name.split('/')
                     site_name = self.url_input.text().split('//')[-1].split('/')[0]
-                    file_name = f"{site_name}.txt"
+                    file_site_name = f"{site_name}.txt"
+                    file_name_split[-1]=file_site_name
+                    file_name='/'.join(file_name_split)
                     with open(file_name,'w',encoding='utf-8') as f:
                         for header in self.headers:
                             f.write(header+"\n")
@@ -75,6 +82,19 @@ class Exctractor(QWidget):
                     self.result_label.setText("Ошибка при создании файла")                    
             else:
                 self.result_label.setText("Нет файла")
+
+    def increment(self):
+        self.count_input_layer +=1
+        if self.count_input_layer <=3:
+            layout = QVBoxLayout()
+            self.new_url_input = QLineEdit(self)
+            self.new_url_input.setPlaceholderText("ВВедите URL")
+            layout.addWidget(self.url_input)
+        else:
+            self.count_input_layer -=1
+            print('Too much. cant work')
+        
+        
 
 
 
